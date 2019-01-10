@@ -32,6 +32,11 @@ dependencies {
     runtime "ch.qos.logback:logback-classic:1.2.3"
     runtime "com.amazonaws:aws-lambda-java-log4j2:1.0.0"
     runtime "org.apache.logging.log4j:log4j-slf4j-impl:2.9.1"
+
+    // To test the functions locally as a standalone web application.
+    runtime "io.micronaut:micronaut-function-web"
+    runtime "io.micronaut:micronaut-http-server-netty"
+
     testCompile "io.micronaut:micronaut-function-client"
     testCompile "io.micronaut:micronaut-inject-groovy"
     testCompile "de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.0.1"
@@ -50,7 +55,9 @@ run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
 shadowJar {
     transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
 }
+
 mainClassName = "micronaut.fn.aws.MicronautFnAwsFunction"
+
 applicationDefaultJvmArgs = [""]
 
 jar {

@@ -1,5 +1,5 @@
 package micronaut.fn.aws
 
 String micronautFnAws() {
-    "micronaut-fn-aws"
+    return "micronaut-fn-aws"
 }
