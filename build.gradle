@@ -6,6 +6,7 @@ plugins {
 
 apply plugin:"application"
 apply plugin:"groovy"
+apply plugin: 'jp.classmethod.aws'
 
 version "0.1"
 group "micronaut.fn.aws"
@@ -45,6 +46,16 @@ dependencies {
     }
     testRuntime "io.micronaut:micronaut-http-server-netty"
     testRuntime "io.micronaut:micronaut-function-web"
+}
+
+aws {
+    profileName = "default"
+    region = 'ap-south-1'
+}
+
+// To add more lambda gradle tasks, Follow https://github.com/classmethod/gradle-aws-plugin#lambda-function-tasks
+lambda {
+    region = 'ap-south-1'
 }
 
 shadowJar {
