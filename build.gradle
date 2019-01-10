@@ -1,7 +1,7 @@
 plugins {
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
     id "com.github.johnrengelman.shadow" version "4.0.2"
-    id "jp.classmethod.aws.lambda" version "0.38"	
+    id "jp.classmethod.aws.lambda" version "0.38"
 }
 
 apply plugin:"application"
@@ -59,18 +59,34 @@ jar {
     }
 }
 
-if(new File("${System.getProperty("user.home")}/.aws/credentials").exists()) {
-    task deploy(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
-        functionName = "micronaut-fn-aws"
-        handler = "micronaut.fn.aws.MicronautFnAwsFunction::micronautFnAws"
-        role = "arn:aws:iam::${aws.accountId}:role/lambda_basic_execution"
-        runtime = com.amazonaws.services.lambda.model.Runtime.Java8
-        zipFile = shadowJar.archivePath
-        memorySize = 256
-        timeout = 60
+task verifyCredentialsPresent {
+    if (!new File("${System.getProperty('user.home')}/.aws/credentials").exists()) {
+        throw new GradleException('Missing AWS Credentials. Please add either in .aws/credentials in home dir or in ' +
+                'the root dir of the project.')
     }
-
 }
+
+task deploy(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask,
+        dependsOn: [shadowJar, verifyCredentialsPresent]) {
+    functionName = "micronaut-fn-aws"
+    handler = "micronaut.fn.aws.MicronautFnAwsFunction::micronautFnAws"
+    role = "arn:aws:iam::${aws.accountId}:role/service-role/lambda_basic_execution"
+    runtime = com.amazonaws.services.lambda.model.Runtime.Java8
+    zipFile = shadowJar.archivePath
+    memorySize = 256
+    timeout = 60
+}
+
+// This task returns the deployed function results for the testing purpose.
+task invoke(type: jp.classmethod.aws.gradle.lambda.AWSLambdaInvokeTask) {
+    functionName = "micronaut-fn-aws"
+    invocationType = com.amazonaws.services.lambda.model.InvocationType.RequestResponse
+    payload = '{"key":"value"}'
+    doLast {
+        println "Lambda function result: " + new String(invokeResult.payload.array(), "UTF-8")
+    }
+}
+
 tasks.withType(GroovyCompile) {
     groovyOptions.forkOptions.jvmArgs.add('-Dgroovy.parameters=true')
 }
