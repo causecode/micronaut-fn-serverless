@@ -1,0 +1,76 @@
+plugins {
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "com.github.johnrengelman.shadow" version "4.0.2"
+    id "jp.classmethod.aws.lambda" version "0.38"	
+}
+
+apply plugin:"application"
+apply plugin:"groovy"
+
+version "0.1"
+group "micronaut.fn.aws"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://jcenter.bintray.com" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.micronaut:micronaut-bom:1.0.3'
+    }
+}
+
+dependencies {
+    compile "io.micronaut.configuration:micronaut-mongo-gorm"
+    compile "io.micronaut:micronaut-function-groovy"
+    compile "io.micronaut:micronaut-runtime-groovy"
+    compile "io.micronaut:micronaut-validation"
+    compile "io.micronaut.configuration:micronaut-mongo-reactive"
+    compileOnly "io.micronaut:micronaut-inject-groovy"
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+    runtime "com.amazonaws:aws-lambda-java-log4j2:1.0.0"
+    runtime "org.apache.logging.log4j:log4j-slf4j-impl:2.9.1"
+    testCompile "io.micronaut:micronaut-function-client"
+    testCompile "io.micronaut:micronaut-inject-groovy"
+    testCompile "de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.0.1"
+    testCompile("org.spockframework:spock-core") {
+        exclude group: "org.codehaus.groovy", module: "groovy-all"
+    }
+    testRuntime "io.micronaut:micronaut-http-server-netty"
+    testRuntime "io.micronaut:micronaut-function-web"
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
+shadowJar {
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
+}
+mainClassName = "micronaut.fn.aws.MicronautFnAwsFunction"
+applicationDefaultJvmArgs = [""]
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+if(new File("${System.getProperty("user.home")}/.aws/credentials").exists()) {
+    task deploy(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
+        functionName = "micronaut-fn-aws"
+        handler = "micronaut.fn.aws.MicronautFnAwsFunction::micronautFnAws"
+        role = "arn:aws:iam::${aws.accountId}:role/lambda_basic_execution"
+        runtime = com.amazonaws.services.lambda.model.Runtime.Java8
+        zipFile = shadowJar.archivePath
+        memorySize = 256
+        timeout = 60
+    }
+
+}
+tasks.withType(GroovyCompile) {
+    groovyOptions.forkOptions.jvmArgs.add('-Dgroovy.parameters=true')
+}

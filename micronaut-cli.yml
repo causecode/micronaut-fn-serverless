@@ -1,0 +1,5 @@
+profile: function-aws
+defaultPackage: micronaut.fn.aws
+---
+testFramework: spock
+sourceLanguage: groovy
