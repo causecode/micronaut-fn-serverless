@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+    Function:
+        Timeout: 25
+
+Resources:
+
+    MicronautFnAwsFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: build/libs/micronaut-fn-aws-0.1-all.jar
+            Handler: micronaut.fn.aws.MicronautFnAwsFunction::micronautFnAws
+            Runtime: java8
+            Events:
+              Api:
+                Type: Api
+                Properties:
+                  Path: /
+                  Method: any
