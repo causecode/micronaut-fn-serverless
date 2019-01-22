@@ -1,7 +1,8 @@
 package micronaut.fn.aws
 
-import con.micronaut.service.InterestService
-import con.micronaut.service.MathematicsService
+import com.micronaut.customtypes.CustomMessage
+import com.micronaut.service.InterestService
+import com.micronaut.service.MathematicsService
 import groovy.transform.Field
 
 import javax.inject.Inject
@@ -13,6 +14,7 @@ import javax.inject.Inject
  * This method tests the Service Injection only.
  * @return
  */
-String printServicesMessage() {
-    return "${interestService.methodName} and ${mathematicsService.getEvenNumbers()}"
+String printServicesMessage(CustomMessage customMessage) {
+    return "${interestService.methodName} and ${mathematicsService.getEvenNumbers()} and " +
+            "Custom Message: ${customMessage.message}"
 }

@@ -113,6 +113,7 @@ task deploy(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask,
 task invoke(type: jp.classmethod.aws.gradle.lambda.AWSLambdaInvokeTask) {
     functionName = "micronaut-fn-aws"
     invocationType = com.amazonaws.services.lambda.model.InvocationType.RequestResponse
+    payload = '{"message":"This is custom message from user."}'
     doLast {
         println "Lambda function result: " + new String(invokeResult.payload.array(), "UTF-8")
     }
