@@ -8,7 +8,42 @@ Gradle 4.8
 
 Java 1.8
 
-AWS Credentials stored at /.aws/credentials in the home directory
+AWS Credentials stored at /.aws/credentials in the home directory which can be created from the "My security credentials" section from the AWS dashboard.
+The credentials file has a form like
+
+```
+[default]
+region=ap-south-1
+aws_access_key_id=##################
+aws_secret_access_key=##################
+```
+
+The default is profile name which can be changed if we are using multiple profiles based on the region. `default` is used in the build.gradle at root of this project as
+
+```
+ aws {
+     profileName = "default"
+     region = 'ap-south-1'
+ }
+ ```
+
+### Set the AWS Lambda function region
+To set the region of lambda function, add the following block in the build.gradle file and this can be changed according to the region in use.
+
+
+```
+lambda {
+    region = 'ap-south-1'
+}
+```
+
+In this app, the main function is defined in the `MicronautFnAwsFunction` class and should be declared in the config as
+
+```
+mainClassName = "micronaut.fn.aws.MicronautFnAwsFunction"
+```
+
+It has a method named `executeMnAwsFunction` which is invoked when we hit the lambda function.
 
 ### Deployments
 To deploy the micronaut function on the AWS Lambda or testing locally, we have setup and tested this function with the following steps:
@@ -16,9 +51,62 @@ To deploy the micronaut function on the AWS Lambda or testing locally, we have s
 ### Deploy the micronaut function to the AWS Lambda
 
 ####To deploy the fucntion on AWS directly from the console:
+
 ```
-➜  micronaut-fn-aws git:(master) ✗ ./gradlew deploy
+micronaut-fn-aws git:(master) ✗ ./gradlew deploy
+
 ```
+
+#### GET and POST requests (Only supported)
+### POST Request:
+To make a post request, add your request body in the `payload` as when you test from the console using `invoke` gradle task.
+
+```
+ payload = '{"customMessage": "This is custom message from user.", "customerId": "1"}'
+```
+The arguments can be customized based on the need in the method defined `executeMnAwsFunction` by changing its parameters. 
+For an example:
+
+The defined micronaut function is
+
+```
+CustomResponse executeMnAwsFunction(CustomRequest request) {
+    String customerId = request.customerId
+
+    CustomResponse customResponse = new CustomResponse()
+
+    if (customerId) {
+        customResponse.customer = customerService.findCustomerById(customerId)
+    }
+
+    customResponse.fromInterestService = interestService.methodName
+    customResponse.fromMathService = mathematicsService.getEvenNumbers()
+
+    customResponse.message = request.customMessage ?: 'No message from console'
+
+    return customResponse
+}
+```
+
+It accepts a request, a custom type, argument only.
+
+### GET Request:
+To make a GET request, you do not need a `payload` and micronaut function should be no args.
+
+#### Test the deployed function using the test events
+Create a test event using the request body:
+
+```
+{
+  "customMessage": "This is custom message from user.",
+  "customerId": "1"
+}
+```
+
+and hit the test to see the results and summay details.
+
+See the working:
+![](https://github.com/causecode/micronaut-fn-serverless/blob/master/assets/micronaut-aws-fn-demo.gif)
 
 ##### From Executable Jars
 
