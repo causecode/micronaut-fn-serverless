@@ -34,10 +34,17 @@ micronaut-fn-aws git:(master) ✗ ./gradlew invoke
 Lambda function result:
     {
         "message":"This is custom message from user.",
-        "customer":{"id":1,
+        "customer":{
+                    "id":1,
                     "name":"John",
-                    "address":{"line":"Pune","zipCode":"411007",
-                    "country":{"name":"India"}}},
+                    "address":{
+                                "line":"Pune",
+                                "zipCode":"411007",
+                                "country":{
+                                            "name":"India"
+                                         }
+                             }
+                  },
         "fromMathService":"[2, 4, 6, 8]",
         "fromInterestService":" This is getMethodName from InterestService."
     }
@@ -46,9 +53,21 @@ Lambda function result:
 and see what happens when we pass the wrong details in the request params:
 
 ###### When we pass wrong customer Id:
+In the `invoke` task, if we change the customerId to 2 which doesn't exists in the records,
+Now our payload is 
+```
+payload = '{"customMessage": "This is custom message from user.", "customerId": "2"}' // 2 doesn't exists
+```
+
+then response will become
+
 ```
 ➜  micronaut-fn-aws git:(master) ✗ ./gradlew invoke
 
 > Task :invoke
-Lambda function result: {"errorMessage":"No customer found with id: 2. Please input a valid id","errorType":"com.micronaut.exception.InvalidIdException"}
+Lambda function result: 
+    {   
+        "errorMessage":"No customer found with id: 2. Please input a valid id",
+        "errorType":"com.micronaut.exception.InvalidIdException"
+    }
 ```
