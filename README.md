@@ -175,9 +175,15 @@ you need to deploy the API on AWS.
 
 Follow these steps to deploy the function on AWS API Gateway:
 1. Select the API Gateway from the amazon services.
-2. Click on the `Create New API` where you need to provide the API name and description.In my case, I have added name `MicronautFnAPI`.
+2. Click on the `Create New API` where you need to provide the API name and description.In my case, we have added name `MicronautFnAPI`.
+
+![](https://github.com/causecode/micronaut-fn-serverless/blob/25b17ce8d67d979b2f24c0af51b5593eff46934a/assets/create-api.png)
+
 3. In the created API, from the Action drop down, select action create method then add a method `POST` where you need to provide the name of
 deployed lambda function and click on save.
+
+![](https://github.com/causecode/micronaut-fn-serverless/blob/25b17ce8d67d979b2f24c0af51b5593eff46934a/assets/create-post-method.png)
+
 4. Go to the `Models`, create a model with the required properties that we may need to use for the function as 
 ```
 {
@@ -193,7 +199,13 @@ deployed lambda function and click on save.
 }
 ```
 then click on create model.
+
+![](https://github.com/causecode/micronaut-fn-serverless/blob/25b17ce8d67d979b2f24c0af51b5593eff46934a/assets/mode-creation-api.png)
+
 5. Now go to `Resources`, select `POST` method and add `model` which is created in the Models section in 4th step. you can also add various metrics here.
+
+![](https://github.com/causecode/micronaut-fn-serverless/blob/25b17ce8d67d979b2f24c0af51b5593eff46934a/assets/add-model-resources.png)
+
 6. Ready to test now. go to the `test` on `Resources` and add a request body and click on `Test`. You will see the results as
  ```
  {
@@ -213,7 +225,15 @@ then click on create model.
    "fromInterestService": " This is getMethodName from InterestService."
  }
  ```
+ 
+ ![](https://github.com/causecode/micronaut-fn-serverless/blob/25b17ce8d67d979b2f24c0af51b5593eff46934a/assets/aws-api-test-before-deploy.png)
+ 
  7. Now API is tested and ready to deploy the API to access outside the AWS. Go to the `Actions` and click on `Deploy API` where you will be required to
  select `Deployment stage`. Select [New stage] and name it beta or alpha. After deploying it, you will get an URL to invoke the Lambda function on the serverless.
- Now you have the `Invoke URL` for the use with `POST` request. 
+ 
+ ![](https://github.com/causecode/micronaut-fn-serverless/blob/25b17ce8d67d979b2f24c0af51b5593eff46934a/assets/deploy-api.png)
+ 
+ 8. Now you have the `Invoke URL` for the use with `POST` request.
+ 
+ ![](https://github.com/causecode/micronaut-fn-serverless/blob/25b17ce8d67d979b2f24c0af51b5593eff46934a/assets/aws-api-response-outside.png)
  
