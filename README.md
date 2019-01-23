@@ -168,3 +168,52 @@ Lambda function result:
         "errorType":"com.micronaut.exception.InvalidIdException"
     }
 ```
+
+#### API Gateway for the created function
+The deployed micronaut function can be consumed by any service by giving its detail in the application.yml file but to allow direct access the micronaut function,
+you need to deploy the API on AWS.
+
+Follow these steps to deploy the function on AWS API Gateway:
+1. Select the API Gateway from the amazon services.
+2. Click on the `Create New API` where you need to provide the API name and description.In my case, I have added name `MicronautFnAPI`.
+3. In the created API, from the Action drop down, select action create method then add a method `POST` where you need to provide the name of
+deployed lambda function and click on save.
+4. Go to the `Models`, create a model with the required properties that we may need to use for the function as 
+```
+{
+    "type": "object",
+    "properties": {
+        "customerId": {
+            "type": "string"
+        },
+        "customMessage": {
+            "type": "string"
+        }
+    }
+}
+```
+then click on create model.
+5. Now go to `Resources`, select `POST` method and add `model` which is created in the Models section in 4th step. you can also add various metrics here.
+6. Ready to test now. go to the `test` on `Resources` and add a request body and click on `Test`. You will see the results as
+ ```
+ {
+   "message": "Test",
+   "customer": {
+     "id": 1,
+     "name": "John",
+     "address": {
+       "line": "Pune",
+       "zipCode": "411007",
+       "country": {
+         "name": "India"
+       }
+     }
+   },
+   "fromMathService": "[2, 4, 6, 8]",
+   "fromInterestService": " This is getMethodName from InterestService."
+ }
+ ```
+ 7. Now API is tested and ready to deploy the API to access outside the AWS. Go to the `Actions` and click on `Deploy API` where you will be required to
+ select `Deployment stage`. Select [New stage] and name it beta or alpha. After deploying it, you will get an URL to invoke the Lambda function on the serverless.
+ Now you have the `Invoke URL` for the use with `POST` request. 
+ 
