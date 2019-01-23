@@ -101,7 +101,7 @@ task verifyCredentialsPresent {
 task deploy(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask,
         dependsOn: [shadowJar, verifyCredentialsPresent]) {
     functionName = "micronaut-fn-aws"
-    handler = "micronaut.fn.aws.MicronautFnAwsFunction::printServicesMessage"
+    handler = "micronaut.fn.aws.MicronautFnAwsFunction::executeMnAwsFunction"
     role = "arn:aws:iam::${aws.accountId}:role/service-role/lambda_basic_execution"
     runtime = com.amazonaws.services.lambda.model.Runtime.Java8
     zipFile = shadowJar.archivePath
@@ -113,7 +113,7 @@ task deploy(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask,
 task invoke(type: jp.classmethod.aws.gradle.lambda.AWSLambdaInvokeTask) {
     functionName = "micronaut-fn-aws"
     invocationType = com.amazonaws.services.lambda.model.InvocationType.RequestResponse
-    payload = '{"message":"This is custom message from user."}'
+    payload = '{"customMessage": "This is custom message from user.", "customerId": "1"}'
     doLast {
         println "Lambda function result: " + new String(invokeResult.payload.array(), "UTF-8")
     }
