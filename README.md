@@ -1,9 +1,13 @@
 # Micronaut-function 1.0.3 on AWS - Lambda
 
 ### Requirements:
+
 Micronaut 1.0.3
+
 Gradle 4.8
+
 Java 1.8
+
 AWS Credentials stored at /.aws/credentials in the home directory
 
 ### Deployments
