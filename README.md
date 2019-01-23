@@ -1,6 +1,6 @@
 # Micronaut-function 1.0.3 on AWS - Lambda
 
-### Requirements:
+#### Requirements:
 
 Micronaut 1.0.3
 
@@ -45,20 +45,25 @@ mainClassName = "micronaut.fn.aws.MicronautFnAwsFunction"
 
 It has a method named `executeMnAwsFunction` which is invoked when we hit the lambda function.
 
-### Deployments
+## Deployments
+For creating a JAR of the function:
+```
+micronaut-fn-aws git:(master) ✗ ./gradlew assemble
+```
+
 To deploy the micronaut function on the AWS Lambda or testing locally, we have setup and tested this function with the following steps:
 
 ### Deploy the micronaut function to the AWS Lambda
 
-####To deploy the fucntion on AWS directly from the console:
+#### To deploy the fucntion on AWS directly from the console:
 
 ```
 micronaut-fn-aws git:(master) ✗ ./gradlew deploy
 
 ```
 
-#### GET and POST requests (Only supported)
-### POST Request:
+### GET and POST requests (Only supported)
+#### POST Request:
 To make a post request, add your request body in the `payload` as when you test from the console using `invoke` gradle task.
 
 ```
@@ -90,10 +95,10 @@ CustomResponse executeMnAwsFunction(CustomRequest request) {
 
 It accepts a request, a custom type, argument only.
 
-### GET Request:
+#### GET Request:
 To make a GET request, you do not need a `payload` and micronaut function should be no args.
 
-#### Test the deployed function using the test events
+### Test the deployed function using the test events
 Create a test event using the request body:
 
 ```
@@ -116,9 +121,9 @@ Use the following commands, where option in {} denotes the input to the lambda f
 libs git:(master) ✗ java -jar micronaut-fn-aws-0.1-all.jar '{"customMessage": "This is custom message from user.", "customerId": 1}'
 ```
 
-##### Test the deployed AWS Lambda function from terminal
+#### Test the deployed AWS Lambda function from terminal using gradle tasks
 
-###### Result of AWS Lambda when we invoke the function from console:
+##### Result of AWS Lambda when we invoke the function from console:
 ```
 micronaut-fn-aws git:(master) ✗ ./gradlew invoke
 
@@ -144,7 +149,7 @@ Lambda function result:
 
 and see what happens when we pass the wrong details in the request params:
 
-###### When we pass wrong customer Id:
+#### Test when we pass wrong inputs (Wrong customer id in this function)
 In the `invoke` task, if we change the customerId to 2 which doesn't exists in the records,
 Now our payload is 
 ```
